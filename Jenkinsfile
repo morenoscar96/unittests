@@ -8,14 +8,14 @@ pipeline {
                     def IS_DIFFERENT = sh(script: "git diff origin/develop...origin/master", returnStdout: true)
                     if(IS_DIFFERENT){
                         NEW_BRANCH = "update/master-develop_2022"
-                        if [ `git branch | grep  ${NEW_BRANCH}` ]
-                        then
+                        if(sh "git branch | grep  ${NEW_BRANCH}") {
                         	echo "${NEW_BRANCH} already exist"
-                            git checkout ${NEW_BRANCH}
-                        else
+                            sh "git checkout ${NEW_BRANCH}"
+                        }
+                        else {
                             git checkout -b ${NEW_BRANCH}
                     		echo "${NEW_BRANCH} has been created and pushed"
-                        fi
+                        }
                         sh "git checkout develop && git pull"
                         output = sh(script: "git checkout -b ", returnStdout: true)
                         echo "${output}"
@@ -76,26 +76,26 @@ pipeline {
         }
         stage('Creating RC PR') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'GitUSERPASS', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    script{
-                        def NEW_RELEASE="release/${env.NEW_VERSION}"
-                        sh """
-                        #change to develop
-                        git checkout develop && git pull
-                        
-                        #create new or checkout to release branch
-                        if [ `git branch | grep  ${NEW_RELEASE}` ]
-                        then
-                        	echo "${NEW_RELEASE} already exist"
-                            git checkout ${NEW_RELEASE}
-                        else
-                            git checkout -b ${NEW_RELEASE}
-                    		echo "${NEW_RELEASE} has been created and pushed"
-                        fi
-                    	git push origin ${NEW_RELEASE}
-                        """    
-                    }
+                git credentialsId: 'GitUSERPASS', url: 'https://github.com/morenoscar96/unittests'
+                script{
+                    def NEW_RELEASE="release/${env.NEW_VERSION}"
+                    sh """#!/bin/bash
+                    #change to develop
+                    git checkout develop && git pull
+
+                    #create new or checkout to release branch
+                    if [ `git branch | grep  ${NEW_RELEASE}` ]
+                    then
+                        echo "${NEW_RELEASE} already exist"
+                        git checkout ${NEW_RELEASE}
+                    else
+                        git checkout -b ${NEW_RELEASE}
+                        echo "${NEW_RELEASE} has been created and pushed"
+                    fi
+                    git push origin ${NEW_RELEASE}
+                    """    
                 }
+                
             }
         }
     }
