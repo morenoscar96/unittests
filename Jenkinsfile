@@ -18,7 +18,7 @@ pipeline {
                             sh "git checkout -b ${NEW_BRANCH}"
                     		echo "${NEW_BRANCH} has been created and pushed"
                         }
-                        def output = sh(script:"git push origin ${NEW_BRANCH}, returnStdout: true)
+                        def output = sh(script:"git push origin ${NEW_BRANCH}", returnStdout: true)
                         echo "Output: ${NEW_BRANCH}"
                     }
                 }
