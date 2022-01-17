@@ -68,25 +68,24 @@ pipeline {
         }
         stage('Creating RC PR') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'GitUSERPASS', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-                    script{
-                        def NEW_RELEASE="release/${env.NEW_VERSION}"
-                        sh """
-                        #change to develop
-                        git checkout develop && git pull
-                        
-                        #create new or checkout to release branch
-                        if [ `git branch | grep  ${NEW_RELEASE}` ]
-                        then
-                        	echo "${NEW_RELEASE} already exist"
-                            git checkout ${NEW_RELEASE}
-                        else
-                            git checkout -b ${NEW_RELEASE}
-                    		echo "${NEW_RELEASE} has been created and pushed"
-                        fi
-                    	git push origin ${NEW_RELEASE}
-                        """    
-                    }
+                git credentialsId: 'GitUSERPASS', url: 'https://github.com/morenoscar96/unittests'
+                script{
+                    def NEW_RELEASE="release/${env.NEW_VERSION}"
+                    sh """
+                    #change to develop
+                    git checkout develop && git pull
+
+                    #create new or checkout to release branch
+                    if [ `git branch | grep  ${NEW_RELEASE}` ]
+                    then
+                        echo "${NEW_RELEASE} already exist"
+                        git checkout ${NEW_RELEASE}
+                    else
+                        git checkout -b ${NEW_RELEASE}
+                        echo "${NEW_RELEASE} has been created and pushed"
+                    fi
+                    git push origin ${NEW_RELEASE}
+                    """    
                 }
             }
         }
