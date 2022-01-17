@@ -7,8 +7,17 @@ pipeline {
                 script {
                     def IS_DIFFERENT = sh(script: "git diff origin/develop...origin/master", returnStdout: true)
                     if(IS_DIFFERENT){
+                        NEW_BRANCH = "update/master-develop_2022"
+                        if [ `git branch | grep  ${NEW_BRANCH}` ]
+                        then
+                        	echo "${NEW_BRANCH} already exist"
+                            git checkout ${NEW_BRANCH}
+                        else
+                            git checkout -b ${NEW_BRANCH}
+                    		echo "${NEW_BRANCH} has been created and pushed"
+                        fi
                         sh "git checkout develop && git pull"
-                        output = sh(script: "git checkout -b update/master-develop_2022", returnStdout: true)
+                        output = sh(script: "git checkout -b ", returnStdout: true)
                         echo "${output}"
                     }
                 }
