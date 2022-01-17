@@ -14,12 +14,11 @@ pipeline {
                             sh "git checkout ${NEW_BRANCH}"
                         }
                         else {
+                            sh "git checkout develop && git pull"
                             sh "git checkout -b ${NEW_BRANCH}"
                     		echo "${NEW_BRANCH} has been created and pushed"
                         }
-                        sh "git checkout develop && git pull"
-                        output = sh(script: "git checkout -b ", returnStdout: true)
-                        echo "${output}"
+                        sh "git push origin ${NEW_BRANCH}
                     }
                 }
             }
